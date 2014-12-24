@@ -47,14 +47,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     }
 
     // BEGIN_INCLUDE(set_alarm)
-
-    /**
-     * Sets a repeating alarm that runs once a day at approximately 8:30 a.m. When the
-     * alarm fires, the app broadcasts an Intent to this WakefulBroadcastReceiver.
-     *
-     * @param context
-     */
-    public void setAlarm(Context context) {
+    public void setAlarm(Context context, int interval) {
         alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
         alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
@@ -62,11 +55,6 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
 
-        int setHour = (calendar.get(Calendar.HOUR_OF_DAY) + 1) % 24;
-        int setMin = calendar.get(Calendar.MINUTE);
-        calendar.set(Calendar.HOUR_OF_DAY, setHour);
-        calendar.set(Calendar.MINUTE, setMin);
-  
         /* 
          * If you don't have precise time requirements, use an inexact repeating alarm
          * the minimize the drain on the device battery.
@@ -98,12 +86,11 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
          *         AlarmManager.INTERVAL_HALF_HOUR, alarmIntent);
          */
 
-        // Set the alarm to fire at approximately 8:30 a.m., according to the device's
-        // clock, and to repeat once a day.
+        interval = 1000 * 60 * interval;
         alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP,
-                calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR, alarmIntent);
+                calendar.getTimeInMillis() + interval, interval, alarmIntent);
 
-        // Enable {@code SampleBootReceiver} to automatically restart the alarm when the
+        // Enable {@code BootReceiver} to automatically restart the alarm when the
         // device is rebooted.
         ComponentName receiver = new ComponentName(context, BootReceiver.class);
         PackageManager pm = context.getPackageManager();
@@ -111,8 +98,6 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         pm.setComponentEnabledSetting(receiver,
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                 PackageManager.DONT_KILL_APP);
-
-        Toast.makeText(context, "You will be notified at " + setHour + ":" + setMin, Toast.LENGTH_SHORT).show();
     }
     // END_INCLUDE(set_alarm)
 
@@ -128,7 +113,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             alarmMgr.cancel(alarmIntent);
         }
 
-        // Disable {@code SampleBootReceiver} so that it doesn't automatically restart the 
+        // Disable {@code BootReceiver} so that it doesn't automatically restart the
         // alarm when the device is rebooted.
         ComponentName receiver = new ComponentName(context, BootReceiver.class);
         PackageManager pm = context.getPackageManager();
@@ -136,8 +121,6 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         pm.setComponentEnabledSetting(receiver,
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                 PackageManager.DONT_KILL_APP);
-
-        Toast.makeText(context, "Alarm disabled", Toast.LENGTH_SHORT).show();
     }
     // END_INCLUDE(cancel_alarm)
 }

@@ -17,8 +17,9 @@ public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-            alarm.setAlarm(context);
+        boolean enabledStatus = PreferenceManager.getEnabledStatus(context);
+        if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED") && enabledStatus) {
+            alarm.setAlarm(context, PreferenceManager.getDiffTime(context));
         }
     }
 }
