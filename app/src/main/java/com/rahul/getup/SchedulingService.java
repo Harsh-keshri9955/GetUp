@@ -19,7 +19,7 @@ import java.net.URL;
 
 /**
  * This {@code IntentService} does the app's actual work.
- * {@code SampleAlarmReceiver} (a {@code WakefulBroadcastReceiver}) holds a
+ * {@code AlarmReceiver} (a {@code WakefulBroadcastReceiver}) holds a
  * partial wake lock for this service while the service does its work. When the
  * service is finished, it calls {@code completeWakefulIntent()} to release the
  * wake lock.
@@ -48,7 +48,7 @@ public class SchedulingService extends IntentService {
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, MainActivity.class), 0);
 
-        long[] vibratePattern = {1000, 1000};
+        long[] vibratePattern = {1000, 500, 1000};
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_launcher)

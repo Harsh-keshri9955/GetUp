@@ -23,6 +23,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        if(!PreferenceManager.getEnabledStatus(context)) return;
         // BEGIN_INCLUDE(alarm_onreceive)
         /* 
          * If your receiver intent includes extras that need to be passed along to the
